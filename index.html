@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		.clickable{
+			cursor: pointer;
+			color: blue;
+			text-decoration: underline;
+		}
+	</style>
+	<script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+	<script type="text/javascript">
+		
+$(document).ready( initializeApp )
+function initializeApp(){
+	$("#loginButton").click( logUserIn );
+	$("#logoutButton").click( logUserOut );
+	getAllItems();
+
+
+	// $.ajax( {
+	// 	url: 'php/getOneTodoItem.php',
+	// 	dataType: 'json',
+	// 	data: {
+	// 		itemID: 3
+	// 	},
+	// 	method: 'post',
+	// 	success: function(response){
+	// 		if(response.success){
+	// 			console.log("one item", response);
+	// 		}
+	// 	},
+	// 	error: function( response){
+	// 		console.log('oops');
+	// 	}
+	// });
+
+
+}
+function presentLoginLogoutOptions(userData){
+	if(userData){
+		$("#loginSection").hide();
+		$("#logoutSection").show();
+		$("#userName").text(userData.username);
+	} else {
+		$("#logoutSection").hide();
+		$("#loginSection").show();
+	}
+}
+
+function getAllItems(){
+	$.ajax( {
+		url: 'php/readAllTodoItems.php',
+		dataType: 'json',
+		success: function(response){
+			if(response.success){
+				renderAllItems(response.data);
+			}
+			presentLoginLogoutOptions(response.user);
+		},
+		error: function( response){
+			console.log('oops');
+		}
+	});
+}
+
+function clearDisplayArea(){
+	$("#itemDisplay").empty();
+}
+function renderAllItems(data){
+	clearDisplayArea();
+	var elements = data.map( item => renderOneItem(item));
+	$("#itemDisplay").append(elements);
+}
+function renderOneItemDetails(id){
+	console.log('getting details for item '+ id);
+}
+
+function renderOneItem(item){
+	var row = $("<div>", {
+		'class': 'itemRow'
+	});
+	var title=  $("<div>",{
+		text: item.title,
+		class: 'title clickable'
+	});
+	title.click( function(){
+		renderOneItemDetails(item.ID)
+	})
+	var dueDate = $("<div>",{
+		text: item.dueDate
+	})
+	row.append(title, dueDate);
+	return row;
+}
+
+
+
+function logUserIn(){
+	var email = $("#email").val();
+	var password = $("#password").val();
+	$.ajax({
+		url: 'php/login.php',
+		method: 'post',
+		data: {
+			email, password
+		},
+		dataType: 'json',
+		success: function(data){
+			if(data.success){
+				presentLoginLogoutOptions(data.user);
+				getAllItems();
+			} else {
+				alert(JSON.stringify(data.error));
+			}
+		}
+	})
+}
+function logUserOut(){
+	$.ajax({
+		url: 'php/logout.php',
+		method: 'get',
+		dataType: 'json',
+		success: function(data){
+			if(data.success){
+				presentLoginLogoutOptions(data.user);
+				clearDisplayArea();
+			}
+		}
+	})	
+}
+
+	</script>
+</head>
+<body>
+<div id="itemDisplay">
+	
+</div>
+<div id="loginSection">
+	<input type="text" id="email" placeholder="email" value="danielpaschal@learningfuze.com">
+	<input type="text" id="password" placeholder="pass word" value="fluffybunnies">
+	<button id="loginButton">login</button>
+</div>
+<div id="logoutSection">
+	Welcome, <span id="userName">unknown</span>
+	<button id="logoutButton">Logout</button>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

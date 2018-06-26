@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+	<script type="text/javascript">
+		
+$(document).ready( initializeApp )
+
+function initializeApp(){
+	$.ajax( {
+		url: '/items',
+		dataType: 'json',
+		success: function(response){
+			if(response.success){
+				console.log("all items", response);
+			}
+		},
+		error: function( response){
+			console.log('oops');
+		}
+	});
+
+	$.ajax( {
+		url: '/item',
+		dataType: 'json',
+		data: {
+			itemID: 1
+		},
+		method: 'get',
+		success: function(response){
+			if(response.success){
+				console.log("one item", response);
+			}
+		},
+		error: function( response){
+			console.log('oops');
+		}
+	});
+}
+
+	</script>
+</head>
+<body>
+ this is the body
+</body>
+</html>
